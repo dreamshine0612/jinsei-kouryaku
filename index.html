@@ -152,6 +152,28 @@
     border-radius: var(--radius); padding: 20px; font-size: 14px; line-height: 1.9; color: #a8b8d4;
   }
   .result-msg strong { color: var(--gold2); }
+
+  /* CTA */
+  .cta-box {
+    display: block; text-decoration: none; text-align: center;
+    background: linear-gradient(135deg, rgba(201,168,76,.14), rgba(124,61,255,.10));
+    border: 1.5px solid var(--gold);
+    border-radius: var(--radius); padding: 24px 20px;
+    box-shadow: 0 0 40px rgba(201,168,76,.15);
+    transition: transform .2s, box-shadow .2s;
+    animation: ctaGlow 2.4s ease-in-out infinite;
+  }
+  @keyframes ctaGlow { 0%,100% { box-shadow: 0 0 30px rgba(201,168,76,.12); } 50% { box-shadow: 0 0 48px rgba(201,168,76,.28); } }
+  .cta-box:hover { transform: translateY(-3px); }
+  .cta-head { font-size: 17px; font-weight: 900; color: var(--gold2); margin-bottom: 8px; }
+  .cta-sub { font-size: 13px; color: #a8b8d4; line-height: 1.8; margin-bottom: 16px; }
+  .cta-btn {
+    display: inline-block; padding: 14px 32px;
+    background: linear-gradient(135deg, var(--gold), #9a7020);
+    color: #080c14; font-size: 16px; font-weight: 900; letter-spacing: 1px;
+    border-radius: 999px; box-shadow: 0 4px 24px rgba(201,168,76,.4);
+  }
+
   .divider { height: 1px; background: #1a2438; }
   .share-section { display: flex; flex-direction: column; gap: 12px; }
   .share-label { text-align: center; font-size: 10px; letter-spacing: 4px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
@@ -213,6 +235,16 @@
     <div class="result-rank" id="result-rank"></div>
   </div>
   <div class="result-msg" id="result-msg"></div>
+
+  <!-- ===== CTA（相談ボタン）===== -->
+  <!-- ▼▼▼ リンクが決まったら、下の href="#" を相談先URLに書き換えるだけ ▼▼▼ -->
+  <a class="cta-box" href="#" id="cta-link" target="_blank" rel="noopener" onclick="return ctaClick(event)">
+    <div class="cta-head">本気で人生攻略家になりたい人へ</div>
+    <div class="cta-sub">高収入・自由な時間・燃える夢を手にする仲間が集まっています。<br>まずは気軽に話を聞いてみませんか？</div>
+    <div class="cta-btn">▶ ここから無料で相談する</div>
+  </a>
+  <!-- ▲▲▲ -->
+
   <div class="divider"></div>
   <div class="share-section">
     <div class="share-label">結果をシェアする</div>
@@ -584,6 +616,18 @@ function copyLink() {
     setTimeout(() => { btn.textContent = '🔗 リンクをコピー'; }, 2000);
   }).catch(() => prompt('コピーしてください', location.href));
 }
+function ctaClick(e) {
+  // href が "#"（未設定）のうちは遷移させず案内だけ出す。
+  // リンクを設定したら自動的に通常リンクとして機能します。
+  const href = document.getElementById('cta-link').getAttribute('href');
+  if (!href || href === '#') {
+    e.preventDefault();
+    alert('相談リンクは準備中です。近日公開予定！');
+    return false;
+  }
+  return true;
+}
+
 function retry() { showScreen('top'); }
 </script>
 </body>
