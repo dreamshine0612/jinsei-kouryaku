@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生攻略クイズ｜人生攻略化プロジェクト</title>
+<meta name="description" content="日本の名経営者と世界の金持ちノウハウから全32問。知らないと当てられない、本物の人生攻略クイズ。">
+
+<!-- favicon -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<!-- OGP (Facebook / LINE 等) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="人生攻略クイズ｜金持ちと経営者の思考、どれだけ知ってる？">
+<meta property="og:description" content="日本の名経営者と世界の金持ちノウハウから全32問。1問ごとに解説つき・最終ランク判定。">
+<meta property="og:url" content="https://dreamshine0612.github.io/jinsei-kouryaku/">
+<meta property="og:image" content="https://dreamshine0612.github.io/jinsei-kouryaku/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="人生攻略化プロジェクト">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="人生攻略クイズ｜金持ちと経営者の思考、どれだけ知ってる？">
+<meta name="twitter:description" content="日本の名経営者と世界の金持ちノウハウから全32問。1問ごとに解説つき・最終ランク判定。">
+<meta name="twitter:image" content="https://dreamshine0612.github.io/jinsei-kouryaku/og-image.png">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0f1623;
+    --surface2: #161e2e;
+    --gold: #c9a84c;
+    --gold2: #f0d080;
+    --text: #e8eaf0;
+    --text-muted: #6b7a99;
+    --accent: #3d6aff;
+    --correct: #2dbe8a;
+    --wrong: #ff5a5a;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .screen { display: none; width: 100%; max-width: 560px; animation: fadeIn .4s ease; }
+  .screen.active { display: flex; flex-direction: column; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes pop { 0% { transform: scale(.96); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+  /* TOP */
+  #screen-top { align-items: center; text-align: center; gap: 26px; padding: 36px 0; }
+  .logo-tag { font-size: 10px; letter-spacing: 5px; color: var(--gold); text-transform: uppercase; font-weight: 700; opacity: .85; }
+  .top-eyecatch { font-size: 60px; line-height: 1; filter: drop-shadow(0 0 20px rgba(201,168,76,.4)); }
+  h1 {
+    font-size: clamp(32px, 8.5vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    background: linear-gradient(140deg, var(--gold2) 0%, var(--gold) 50%, #8a6020 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: -1px;
+  }
+  .top-sub { font-size: 14px; color: var(--text-muted); line-height: 1.9; }
+  .top-sub strong { color: var(--text); font-weight: 700; }
+  .top-names { font-size: 12px; color: var(--text-muted); line-height: 1.8; opacity: .75; border-top: 1px solid #1a2438; border-bottom: 1px solid #1a2438; padding: 14px 0; }
+  .start-btn {
+    padding: 20px 56px;
+    background: linear-gradient(135deg, var(--gold), #9a7020);
+    color: #080c14; font-size: 18px; font-weight: 900; border: none;
+    border-radius: 999px; cursor: pointer; letter-spacing: 2px;
+    transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 32px rgba(201,168,76,.4);
+  }
+  .start-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 44px rgba(201,168,76,.55); }
+  .count-note { font-size: 12px; color: var(--text-muted); opacity: .7; }
+
+  /* QUIZ */
+  #screen-quiz { gap: 20px; }
+  .progress-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .progress-bar-bg { height: 3px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); border-radius: 999px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+  .progress-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); }
+  .progress-score { color: var(--gold); font-weight: 700; }
+  .q-genre { font-size: 11px; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
+  .q-text { font-size: clamp(17px, 4.6vw, 22px); font-weight: 800; line-height: 1.6; letter-spacing: -.3px; animation: slideIn .3s ease; }
+  .choices { display: flex; flex-direction: column; gap: 11px; }
+  .choice-btn {
+    background: var(--surface); border: 1.5px solid #1e2a42; border-radius: var(--radius);
+    padding: 16px 18px; text-align: left; cursor: pointer;
+    transition: border-color .2s, background .2s, transform .12s;
+    display: flex; align-items: flex-start; gap: 13px; color: var(--text);
+    font-size: 15px; line-height: 1.55; width: 100%;
+  }
+  .choice-btn:not(:disabled):hover { border-color: rgba(201,168,76,.5); background: #0d1522; transform: translateX(3px); }
+  .choice-label {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; min-width: 28px; border-radius: 8px;
+    background: var(--surface2); font-weight: 900; font-size: 13px;
+    color: var(--text-muted); border: 1px solid #2a3550; transition: all .2s;
+  }
+  .choice-btn.correct { border-color: var(--correct); background: rgba(45,190,138,.12); animation: pop .3s ease; }
+  .choice-btn.correct .choice-label { background: var(--correct); color: #042; border-color: var(--correct); }
+  .choice-btn.wrong { border-color: var(--wrong); background: rgba(255,90,90,.1); }
+  .choice-btn.wrong .choice-label { background: var(--wrong); color: #400; border-color: var(--wrong); }
+  .choice-btn:disabled { cursor: default; opacity: .55; }
+  .choice-btn.correct:disabled, .choice-btn.wrong:disabled { opacity: 1; }
+
+  .explain {
+    display: none;
+    background: var(--surface); border: 1px solid #1e2a42; border-left: 3px solid var(--gold);
+    border-radius: var(--radius); padding: 16px 18px; font-size: 13.5px; line-height: 1.85; color: #a8b8d4;
+    animation: fadeIn .3s ease;
+  }
+  .explain.show { display: block; }
+  .explain .verdict { font-weight: 900; font-size: 15px; margin-bottom: 6px; }
+  .explain .verdict.ok { color: var(--correct); }
+  .explain .verdict.ng { color: var(--wrong); }
+  .explain strong { color: var(--gold2); }
+
+  .next-btn {
+    padding: 16px; background: linear-gradient(135deg, var(--gold), #a07030);
+    color: #080c14; font-size: 16px; font-weight: 900; border: none; border-radius: 999px;
+    cursor: pointer; transition: opacity .2s, transform .2s; letter-spacing: 1px;
+    display: none;
+  }
+  .next-btn.show { display: block; animation: fadeIn .3s ease; }
+  .next-btn:hover { transform: translateY(-2px); }
+
+  /* RESULT */
+  #screen-result { gap: 22px; padding: 8px 0; }
+  .result-top { text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+  .result-circle {
+    width: 150px; height: 150px; border-radius: 50%; border: 2.5px solid var(--gold);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 40%, rgba(201,168,76,.12), transparent 70%);
+    box-shadow: 0 0 50px rgba(201,168,76,.18), inset 0 0 30px rgba(201,168,76,.06);
+  }
+  .result-score-num { font-size: 50px; font-weight: 900; color: var(--gold2); line-height: 1; font-variant-numeric: tabular-nums; }
+  .result-score-num small { font-size: 22px; color: var(--text-muted); }
+  .result-score-unit { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .result-rank { font-size: clamp(22px, 5.5vw, 30px); font-weight: 900; line-height: 1.3; }
+  .result-msg {
+    background: var(--surface); border: 1px solid #1e2a42; border-left: 3px solid var(--gold);
+    border-radius: var(--radius); padding: 20px; font-size: 14px; line-height: 1.9; color: #a8b8d4;
+  }
+  .result-msg strong { color: var(--gold2); }
+  .divider { height: 1px; background: #1a2438; }
+  .share-section { display: flex; flex-direction: column; gap: 12px; }
+  .share-label { text-align: center; font-size: 10px; letter-spacing: 4px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+  .share-row { display: flex; gap: 10px; }
+  .share-btn { flex: 1; padding: 15px 10px; border: none; border-radius: var(--radius); cursor: pointer; font-size: 14px; font-weight: 800; transition: transform .2s, opacity .2s; }
+  .share-btn:hover { transform: translateY(-2px); opacity: .92; }
+  .btn-x { background: #0f0f0f; color: #fff; border: 1.5px solid #2a2a2a; }
+  .btn-line { background: #06C755; color: #fff; }
+  .btn-copy { background: var(--surface2); color: var(--text-muted); border: 1.5px solid #2a3550; font-size: 13px; }
+  .retry-btn { background: transparent; border: 1.5px solid #2a3550; color: var(--text-muted); border-radius: 999px; padding: 13px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; }
+  .retry-btn:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- TOP -->
+<div id="screen-top" class="screen active">
+  <div class="logo-tag">人生攻略化プロジェクト</div>
+  <div class="top-eyecatch">⚔️</div>
+  <h1>人生攻略<br>クイズ</h1>
+  <p class="top-sub">
+    <strong>金持ちと一流経営者は、何を知っていて何を考えているのか。</strong><br>
+    日本の名経営者と、世界の富のノウハウから全32問。<br>
+    “正論っぽい方”を選んでも当たりません。<br>
+    本当に知っているか、が問われます。
+  </p>
+  <div class="top-names">
+    稲盛和夫・柳井正・孫正義・本田宗一郎・松下幸之助・渋沢栄一<br>
+    ／ ロバート・キヨサキ・バフェット・ドラッカー・7つの習慣 ほか
+  </div>
+  <button class="start-btn" onclick="startQuiz()">クイズに挑戦する</button>
+  <span class="count-note">全32問 ／ 1問ごとに解説つき</span>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-meta">
+      <span id="progress-text">1 / 32</span>
+      <span class="progress-score" id="progress-score">正解 0</span>
+    </div>
+  </div>
+  <div class="q-genre" id="q-genre"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="choices" id="choices"></div>
+  <div class="explain" id="explain"></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <div class="result-top">
+    <div class="logo-tag">クイズ完了</div>
+    <div class="result-circle">
+      <div class="result-score-num"><span id="result-correct">0</span><small> / 32</small></div>
+      <div class="result-score-unit">正解数</div>
+    </div>
+    <div class="result-rank" id="result-rank"></div>
+  </div>
+  <div class="result-msg" id="result-msg"></div>
+  <div class="divider"></div>
+  <div class="share-section">
+    <div class="share-label">結果をシェアする</div>
+    <div class="share-row">
+      <button class="share-btn btn-x" onclick="shareX()">𝕏 でシェア</button>
+      <button class="share-btn btn-line" onclick="shareLine()">LINE でシェア</button>
+    </div>
+    <button class="share-btn btn-copy" onclick="copyLink()">🔗 リンクをコピー</button>
+    <button class="retry-btn" onclick="retry()">↩ もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+// correct = 正解の選択肢インデックス
+const QUESTIONS = [
+  {
+    genre: "稲盛和夫 / 京セラ・JAL",
+    q: "稲盛和夫の有名な方程式「人生・仕事の結果 ＝ 考え方 × 熱意 × 能力」。この3要素のうち、唯一マイナスの値を取りうるとされるのはどれ？",
+    choices: ["熱意", "能力", "考え方", "3つとも0〜100の範囲"],
+    correct: 2,
+    explain: "熱意と能力は0〜100点。しかし<strong>考え方だけはマイナス100〜プラス100</strong>。方向性（考え方）が間違っていれば、能力と熱意が高いほど結果は大きくマイナスに振れる、という思想です。"
+  },
+  {
+    genre: "金持ち父さん貧乏父さん",
+    q: "ロバート・キヨサキ『金持ち父さん貧乏父さん』では、ローンで買った“自宅（マイホーム）”はどう分類される？",
+    choices: ["資産", "負債", "投資", "純資産"],
+    correct: 1,
+    explain: "キヨサキの定義では、資産は「ポケットにお金を入れてくれるもの」、負債は「ポケットからお金を奪うもの」。<strong>自宅は維持費・税金・ローンでお金が出ていくため“負債”</strong>に分類される、というのが本書の核心です。"
+  },
+  {
+    genre: "7つの習慣",
+    q: "コヴィー『7つの習慣』の第2の習慣はどれ？",
+    choices: ["主体的である", "終わりを思い描くことから始める", "最優先事項を優先する", "Win-Winを考える"],
+    correct: 1,
+    explain: "第1「主体的である」、<strong>第2「終わりを思い描くことから始める」</strong>、第3「最優先事項を優先する」、第4「Win-Winを考える」。ゴール（終わり）から逆算する習慣が第2です。"
+  },
+  {
+    genre: "ウォーレン・バフェット",
+    q: "バフェットが語る投資の「ルール1」は次のうちどれ？",
+    choices: ["長期で持ち続けろ", "分散投資しろ", "絶対に損をするな", "他人が恐れる時に買え"],
+    correct: 2,
+    explain: "「ルール1：<strong>絶対に損をするな</strong>。ルール2：ルール1を忘れるな」。守りを徹底し、致命的な損失を避けることが複利を生かす大前提だという考えです。"
+  },
+  {
+    genre: "柳井正 / ユニクロ",
+    q: "ユニクロ創業者・柳井正の代表的な著書のタイトルはどれ？",
+    choices: ["一勝九敗", "九勝一敗", "百戦百勝の経営", "失敗しない経営"],
+    correct: 0,
+    explain: "答えは<strong>『一勝九敗』</strong>。挑戦の9割は失敗する、しかし致命傷を避けて1勝を積み上げ続けることが経営だ、という柳井氏の哲学を表したタイトルです。"
+  },
+  {
+    genre: "本田宗一郎 / ホンダ",
+    q: "本田宗一郎の言葉「私の仕事は成功はわずか1%。残りの99%は◯◯だった」。◯◯に入るのは？",
+    choices: ["努力", "運", "失敗", "苦労"],
+    correct: 2,
+    explain: "「成功は99%の<strong>失敗</strong>に支えられた1%だ」。失敗こそが成功の母体だという、挑戦を恐れない技術者・本田宗一郎を象徴する言葉です。"
+  },
+  {
+    genre: "松下幸之助 / パナソニック",
+    q: "松下幸之助が説いた、好況・不況に振り回されないよう常に余裕（蓄え）を持つ経営手法は？",
+    choices: ["カンバン経営", "ダム式経営", "石垣経営", "井戸式経営"],
+    correct: 1,
+    explain: "答えは<strong>「ダム式経営」</strong>。ダムが水を貯めて流量を調整するように、資金・人材・設備に常に余裕（ゆとり）を持たせておく経営の考え方です。"
+  },
+  {
+    genre: "複利の数学",
+    q: "「72の法則」を使うと、年利6%で運用したお金が約2倍になるのにかかる年数はおよそ何年？",
+    choices: ["約6年", "約12年", "約24年", "約36年"],
+    correct: 1,
+    explain: "72 ÷ 金利(%) ＝ 2倍になるおよその年数。<strong>72 ÷ 6 ＝ 約12年</strong>。複利の威力をざっくり暗算するための、金持ちの基礎教養です。"
+  },
+  {
+    genre: "パレートの法則",
+    q: "ビジネスで多用される「パレートの法則（80:20の法則）」が表すのは次のうちどれ？",
+    choices: ["成果の8割は、原因の2割から生まれる", "8割成功すれば2割の失敗は許される", "売上の2割を経費の8割が食う", "顧客の8割が利益の2割を生む"],
+    correct: 0,
+    explain: "<strong>成果（結果）の約8割は、全体の2割の要因から生まれる</strong>という経験則。「どの2割に集中するか」を見極めることが、時間とお金の最大効率につながります。"
+  },
+  {
+    genre: "渋沢栄一",
+    q: "“日本資本主義の父”渋沢栄一が、道徳と利益の両立を説いた著書のタイトルは？",
+    choices: ["富国論", "論語と算盤", "経済と道徳", "実業之日本"],
+    correct: 1,
+    explain: "答えは<strong>『論語と算盤（そろばん）』</strong>。倫理（論語）と利益追求（算盤）は両立すべきだ、という思想で、500社超の設立に関わった渋沢の根本哲学です。"
+  },
+  {
+    genre: "ドラッカー",
+    q: "経営学者ドラッカーの有名な原則。「◯◯できないものは、管理（改善）できない」。◯◯は？",
+    choices: ["数値化", "測定", "言語化", "比較"],
+    correct: 1,
+    explain: "「<strong>測定</strong>できないものは管理できない」。改善したいなら、まず計測する。感覚ではなく数字で現在地を把握することが、攻略の出発点だという原則です。"
+  },
+  {
+    genre: "習慣の複利",
+    q: "『Atomic Habits（複利で伸びる1つの習慣）』。毎日1%ずつ成長を続けると、1年後にはおよそ何倍になる？",
+    choices: ["約3.6倍", "約12倍", "約37倍", "約100倍"],
+    correct: 2,
+    explain: "1.01 の365乗 ≒ <strong>約37.8倍</strong>。逆に毎日1%サボると0.99の365乗で約0.03倍に激減。小さな習慣の差が1年で桁違いの差になる、という複利の話です。"
+  },
+  {
+    genre: "金持ち父さん / 4つの箱",
+    q: "キヨサキの「キャッシュフロー・クワドラント」。E（従業員）S（自営業）B（ビジネスオーナー）I（投資家）のうち、経済的自由に近いとされる側は？",
+    choices: ["EとS（左側）", "BとI（右側）", "SとB", "EとI"],
+    correct: 1,
+    explain: "自分が働く左側（E・S）に対し、<strong>仕組みとお金が働く右側（B・I）</strong>が経済的自由に近いとされます。“時間の切り売り”から“仕組みづくり”への移行が鍵です。"
+  },
+  {
+    genre: "お金の名言",
+    q: "「複利は人類最大の発明だ」と語ったと（俗説で）よく引用されるのは誰？",
+    choices: ["アインシュタイン", "ニュートン", "エジソン", "ロックフェラー"],
+    correct: 0,
+    explain: "真偽は諸説ありますが、<strong>アインシュタイン</strong>の言葉として広く引用されます。「複利を理解する者はそれで稼ぎ、理解しない者はそれを払う」とも。"
+  },
+  {
+    genre: "メラビアンの法則",
+    q: "「メラビアンの法則」によれば、対面で相手に伝わる印象に最も大きく影響するのはどれ？",
+    choices: ["話の内容（言語）", "声・話し方（聴覚）", "見た目・表情（視覚）", "3つとも同じ"],
+    correct: 2,
+    explain: "矛盾したメッセージを受けた際、影響度は<strong>視覚（見た目）55%・聴覚38%・言語7%</strong>。「何を言うか」より「どう見え、どう話すか」が印象を支配するという研究です。"
+  },
+  {
+    genre: "PDCA",
+    q: "改善の基本サイクル「PDCA」。3番目の「C」が表すのは？",
+    choices: ["Create（創造）", "Check（評価・検証）", "Control（管理）", "Continue（継続）"],
+    correct: 1,
+    explain: "Plan（計画）→ Do（実行）→ <strong>Check（評価・検証）</strong>→ Act（改善）。やりっぱなしにせず、検証して回し続けることが成果を生むという基本フレームです。"
+  },
+  {
+    genre: "稲盛和夫 / JAL再建",
+    q: "稲盛和夫が経営破綻したJALを再建する際に導入した、全社員が採算を意識する小集団・部門別採算管理の手法は？",
+    choices: ["セル生産方式", "アメーバ経営", "カイゼン方式", "コックピット経営"],
+    correct: 1,
+    explain: "答えは<strong>「アメーバ経営」</strong>。組織を小さな採算単位に分け、全員が経営者意識を持つ仕組み。これがJALを1年で黒字化させた再建の柱になったと言われます。"
+  },
+  {
+    genre: "やり抜く力 GRIT",
+    q: "心理学者アンジェラ・ダックワースの研究によれば、長期的な成功を最もよく予測するのは？",
+    choices: ["生まれ持った才能", "IQの高さ", "情熱と粘り強さ（やり抜く力）", "恵まれた家庭環境"],
+    correct: 2,
+    explain: "彼女の研究では、才能やIQよりも<strong>「情熱を持って物事をやり抜く力（GRIT）」</strong>が成功を予測したとされます。才能は出発点にすぎない、という結論です。"
+  },
+  {
+    genre: "7つの習慣 / 時間管理",
+    q: "『7つの習慣』の時間管理マトリクス。成功者が意識的に時間を増やすべきとされるのは、どの領域？",
+    choices: ["緊急かつ重要（第1領域）", "緊急でないが重要（第2領域）", "緊急だが重要でない（第3領域）", "緊急でも重要でもない（第4領域）"],
+    correct: 1,
+    explain: "鍵は<strong>第2領域「緊急でないが重要」</strong>。健康・学習・人間関係・準備など、締切に追われない“重要なこと”に先に投資する人が成果を出すという考えです。"
+  },
+  {
+    genre: "ビジネス用語",
+    q: "「レバレッジを効かせる」のレバレッジ。その本来の意味は？",
+    choices: ["てこ（の原理）", "風向き", "歯車", "羅針盤"],
+    correct: 0,
+    explain: "レバレッジ＝<strong>てこ</strong>。小さな力（自己資本・自分の時間）で大きな成果を動かすこと。借入・他人の時間・仕組みを使って成果を増幅させる発想です。"
+  },
+  {
+    genre: "三木谷浩史 / 楽天",
+    q: "楽天・三木谷浩史が掲げる「成功のコンセプト」の中で、3回繰り返して強調される言葉は？",
+    choices: ["改善・改善・改善", "スピード・スピード・スピード", "顧客・顧客・顧客", "挑戦・挑戦・挑戦"],
+    correct: 1,
+    explain: "「<strong>スピード!! スピード!! スピード!!</strong>」。同じ仕事でも、速くやれば実質的にコストが下がり機会も増える。速度こそ競争優位だという楽天の行動指針です。"
+  },
+  {
+    genre: "堀江貴文",
+    q: "堀江貴文の著書で、一つに縛られず複数を同時にこなす力をテーマにしたベストセラーは？",
+    choices: ["多動力", "瞬発力", "全集中力", "分身力"],
+    correct: 0,
+    explain: "答えは<strong>『多動力』</strong>。一つの会社・肩書きに縛られず、興味のままに次々動き複数を掛け合わせる力こそ、これからの時代に必要だという主張です。"
+  },
+  {
+    genre: "マズローの欲求段階",
+    q: "マズローの欲求5段階説で、最上位に位置づけられる欲求はどれ？",
+    choices: ["承認（尊重）の欲求", "社会的（所属）欲求", "安全の欲求", "自己実現の欲求"],
+    correct: 3,
+    explain: "下から 生理的→安全→所属→承認→<strong>自己実現</strong>。お金や承認が満たされた先に、人は「自分の可能性を最大限に発揮したい」という自己実現を求めるとされます。"
+  },
+  {
+    genre: "孫正義 / ソフトバンク",
+    q: "孫正義が語る人生戦略。「まず◯◯を決めよ。これで人生の半分が決まる」。◯◯に入るのは？",
+    choices: ["資金", "登る山（志）", "仲間", "撤退ライン"],
+    correct: 1,
+    explain: "「<strong>登る山を決める</strong>。これで人生の半分が決まる」。どの山に登るか（志・ビジョン）を最初に決めれば、必要な装備も道も自ずと定まる、という孫氏の考え。“努力の方向”を先に決めよ、という話です。"
+  },
+  {
+    genre: "ジェフ・ベゾス / Amazon",
+    q: "アマゾン創業者ベゾスが、常に「今日はまだその初日だ」と説き、組織が陥るのを警戒し続けた状態を表す言葉は？",
+    choices: ["Game Over", "Day 2", "Plan B", "Stage 0"],
+    correct: 1,
+    explain: "ベゾスは常に「<strong>Day 1（創業初日の精神）</strong>」を掲げ、その反対の「<strong>Day 2</strong>」を“停滞、そして衰退と死の始まり”として最も警戒しました。大企業病への戒めです。"
+  },
+  {
+    genre: "スティーブ・ジョブズ",
+    q: "ジョブズがスタンフォード大学の卒業式で締めくくった有名な言葉。「Stay hungry, ◯◯◯◯ ◯◯◯◯◯◯」",
+    choices: ["stay humble（謙虚であれ）", "stay strong（強くあれ）", "stay foolish（愚かであれ）", "stay young（若くあれ）"],
+    correct: 2,
+    explain: "「Stay hungry, <strong>stay foolish</strong>（ハングリーであれ、愚かであれ）」。賢く立ち回るより、ばか者と言われても挑み続けろ、というメッセージです。"
+  },
+  {
+    genre: "7つの習慣",
+    q: "『7つの習慣』の第7の習慣「◯◯を研ぐ」。自分自身を再生・メンテナンスし続ける習慣を表す◯◯は？",
+    choices: ["刃", "矢", "石", "技"],
+    correct: 0,
+    explain: "第7の習慣は「<strong>刃を研ぐ</strong>（Sharpen the Saw）」。木こりが切れ味の落ちた刃を研がず木を切り続ける愚を避け、心身・知性・人間性を定期的に磨き直すことの重要性を説きます。"
+  },
+  {
+    genre: "思考は現実化する",
+    q: "ナポレオン・ヒル『思考は現実化する』。あらゆる富の出発点（第一歩）とされるのは？",
+    choices: ["緻密な事業計画", "豊富な元手資金", "燃えるような願望", "信頼できる人脈"],
+    correct: 2,
+    explain: "本書が説く富の出発点は<strong>「燃えるような願望（欲求）」</strong>。漠然とした“願い”ではなく、絶対に手に入れると燃える明確な欲求こそが、思考を現実に変える起点だとされます。"
+  },
+  {
+    genre: "行動経済学",
+    q: "すでに支払って取り戻せない「サンクコスト（埋没費用）」。合理的な意思決定における正しい扱いは？",
+    choices: ["回収できるまで続けるべき", "意思決定の判断材料から除外すべき", "損失分を次の予算に上乗せすべき", "最優先で考慮すべき"],
+    correct: 1,
+    explain: "取り戻せない費用は、これからの判断に影響させるべきではない＝<strong>無視して切り離すのが合理的</strong>。「ここまで投資したから」と続ける“サンクコストの呪縛”が、撤退の判断を狂わせます。"
+  },
+  {
+    genre: "ファスト&スロー",
+    q: "カーネマン『ファスト&スロー』。人間の思考の「システム1」が指すのはどちら？",
+    choices: ["速くて直感的な思考", "遅くて論理的な思考", "記憶を司る思考", "感情を抑える思考"],
+    correct: 0,
+    explain: "<strong>システム1＝速い・直感的・自動的</strong>な思考。システム2＝遅い・論理的・努力を要する思考。多くの判断ミスは、システム2で考えるべき場面でシステム1（直感）に頼ることで起きます。"
+  },
+  {
+    genre: "1万時間の法則",
+    q: "「一流になるには約1万時間の練習が必要」とする“1万時間の法則”を世に広めた、ベストセラー書籍は？",
+    choices: ["『天才! 成功する人々の法則』", "『やり抜く力』", "『習慣の力』", "『FACTFULNESS』"],
+    correct: 0,
+    explain: "答えはマルコム・グラッドウェル『<strong>天才! 成功する人々の法則（Outliers）</strong>』。ただし近年は「時間より練習の“質”が重要」とも指摘され、単純な時間信仰には注意が必要です。"
+  }
+];
+
+let currentQ = 0;
+let correctCount = 0;
+let answered = false;
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function startQuiz() {
+  currentQ = 0;
+  correctCount = 0;
+  showScreen('quiz');
+  renderQ();
+}
+
+function renderQ() {
+  answered = false;
+  const q = QUESTIONS[currentQ];
+  const pct = (currentQ / QUESTIONS.length) * 100;
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = (currentQ + 1) + ' / ' + QUESTIONS.length;
+  document.getElementById('progress-score').textContent = '正解 ' + correctCount;
+  document.getElementById('q-genre').textContent = '◆ ' + q.genre;
+
+  const qt = document.getElementById('q-text');
+  qt.textContent = q.q;
+  qt.style.animation = 'none'; qt.offsetHeight; qt.style.animation = 'slideIn .3s ease';
+
+  const labels = ['A', 'B', 'C', 'D'];
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-label">${labels[i]}</span><span>${c}</span>`;
+    btn.addEventListener('click', () => answer(i));
+    choicesEl.appendChild(btn);
+  });
+
+  const ex = document.getElementById('explain');
+  ex.className = 'explain';
+  ex.innerHTML = '';
+
+  const nb = document.getElementById('next-btn');
+  nb.className = 'next-btn';
+  nb.textContent = currentQ === QUESTIONS.length - 1 ? '結果を見る →' : '次の問題 →';
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[currentQ];
+  const btns = document.querySelectorAll('.choice-btn');
+  const isCorrect = idx === q.correct;
+  if (isCorrect) correctCount++;
+
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  document.getElementById('progress-score').textContent = '正解 ' + correctCount;
+
+  const ex = document.getElementById('explain');
+  ex.innerHTML = `<div class="verdict ${isCorrect ? 'ok' : 'ng'}">${isCorrect ? '正解！' : '不正解'}</div>${q.explain}`;
+  ex.classList.add('show');
+
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) {
+    buildResult();
+    showScreen('result');
+    return;
+  }
+  renderQ();
+}
+
+function buildResult() {
+  const n = QUESTIONS.length;
+  const pct = correctCount / n;
+  let rankIcon, rank, msg;
+
+  if (pct >= 0.9) {
+    rankIcon = '🏆'; rank = '人生攻略マスター';
+    msg = `驚異的です。<strong>金持ちと一流経営者の思考を、知識として完全にインストール済み</strong>。あとは知っていることを、どれだけ実行に移すか。知識は十分。次のステージは“行動量”です。`;
+  } else if (pct >= 0.7) {
+    rankIcon = '⚡'; rank = '攻略者の素養あり';
+    msg = `かなりの知識量です。<strong>成功者の原則の大枠はつかめています</strong>。取りこぼした数問にこそ、あなたの伸びしろが隠れています。解説を読み返して、知識の穴を埋めていきましょう。`;
+  } else if (pct >= 0.5) {
+    rankIcon = '🌱'; rank = '学習中の挑戦者';
+    msg = `半分は正解。<strong>感覚ではなく、ここから“原則”として学び直す段階</strong>です。今日間違えた問題は、そのままあなたが知らなかった金持ちのルール。これを知るだけで世界の見え方が変わります。`;
+  } else {
+    rankIcon = '📚'; rank = 'これから攻略開始';
+    msg = `正直、ここがスタートラインです。<strong>でも落ち込む必要はない。世の中の大半の人がこのラインにいます</strong>。差がつくのはここから。今日出会った原則を1つずつ自分のものにすれば、あなたは確実に上位に行けます。`;
+  }
+
+  window._correct = correctCount;
+  window._total = n;
+  window._rankFull = rankIcon + ' ' + rank;
+
+  document.getElementById('result-correct').textContent = correctCount;
+  document.getElementById('result-rank').textContent = rankIcon + ' ' + rank;
+  document.getElementById('result-msg').innerHTML = msg;
+
+  let c = 0;
+  const t = setInterval(() => {
+    c = Math.min(c + 1, correctCount);
+    document.getElementById('result-correct').textContent = c;
+    if (c >= correctCount) clearInterval(t);
+  }, 45);
+}
+
+function getShareText() {
+  return `【人生攻略クイズ】\n\n${window._total}問中 ${window._correct}問 正解！\n判定：${window._rankFull}\n\n金持ちと一流経営者の思考、あなたはどれだけ知ってる？\n\n#人生攻略化 #人生攻略クイズ`;
+}
+function shareX() {
+  const url = encodeURIComponent(location.href);
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(getShareText()) + '&url=' + url, '_blank');
+}
+function shareLine() {
+  const text = `【人生攻略クイズ】${window._total}問中${window._correct}問正解・${window._rankFull}！金持ちと経営者の思考クイズに挑戦してみて。 ${location.href}`;
+  window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text), '_blank');
+}
+function copyLink() {
+  const text = getShareText() + '\n\n' + location.href;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✅ コピーしました';
+    setTimeout(() => { btn.textContent = '🔗 リンクをコピー'; }, 2000);
+  }).catch(() => prompt('コピーしてください', location.href));
+}
+function retry() { showScreen('top'); }
+</script>
+</body>
+</html>
