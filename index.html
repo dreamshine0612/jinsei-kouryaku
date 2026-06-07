@@ -39,17 +39,22 @@
     --wrong: #ff5a5a;
     --radius: 16px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Hiragino Sans', sans-serif;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    overflow-x: hidden;
   }
+  button { font-family: inherit; -webkit-appearance: none; appearance: none; }
 
   .screen { display: none; width: 100%; max-width: 560px; animation: fadeIn .4s ease; }
   .screen.active { display: flex; flex-direction: column; }
@@ -185,6 +190,28 @@
   .btn-copy { background: var(--surface2); color: var(--text-muted); border: 1.5px solid #2a3550; font-size: 13px; }
   .retry-btn { background: transparent; border: 1.5px solid #2a3550; color: var(--text-muted); border-radius: 999px; padding: 13px; cursor: pointer; font-size: 14px; transition: all .2s; width: 100%; }
   .retry-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ===== スマホ最適化（小画面） ===== */
+  @media (max-width: 480px) {
+    #screen-top { padding: 20px 0; gap: 20px; }
+    .top-eyecatch { font-size: 48px; }
+    .top-sub { font-size: 13px; }
+    .start-btn { padding: 18px 44px; font-size: 17px; width: 100%; max-width: 320px; }
+    .choice-btn { padding: 15px 15px; font-size: 14.5px; }
+    .choice-btn:not(:disabled):hover { transform: none; }  /* スマホはホバーずれを無効化 */
+    .q-text { font-size: 18px; }
+    .explain { font-size: 13px; padding: 14px 15px; }
+    .result-circle { width: 130px; height: 130px; }
+    .result-score-num { font-size: 44px; }
+    .share-row { gap: 8px; }
+    .share-btn { padding: 14px 8px; font-size: 13px; }
+    .cta-head { font-size: 16px; }
+    .cta-btn { padding: 14px 24px; font-size: 15px; width: 100%; }
+  }
+  /* タッチ端末ではホバーの拡大を切る（誤作動防止） */
+  @media (hover: none) {
+    .choice-btn:not(:disabled):hover { transform: none; background: var(--surface); }
+  }
 </style>
 </head>
 <body>
@@ -476,6 +503,13 @@ const QUESTIONS = [
     choices: ["『天才! 成功する人々の法則』", "『やり抜く力』", "『習慣の力』", "『FACTFULNESS』"],
     correct: 0,
     explain: "答えはマルコム・グラッドウェル『<strong>天才! 成功する人々の法則（Outliers）</strong>』。ただし近年は「時間より練習の“質”が重要」とも指摘され、単純な時間信仰には注意が必要です。"
+  },
+  {
+    genre: "ゼロ・トゥ・ワン",
+    q: "ピーター・ティール（PayPal創業者）が著書『ゼロ・トゥ・ワン』で「真に価値がある」と説いたのはどちら？",
+    choices: ["成功事例を真似て広げる（1→n）", "誰もやっていない新しいものを生む（0→1）", "とにかく数を増やす（n→n²）", "撤退して身軽になる（n→0）"],
+    correct: 1,
+    explain: "ティールが価値を置くのは<strong>「0→1」＝この世になかったものを生み出すこと</strong>。既存の成功を真似る「1→n」は競争に巻き込まれるだけで、本当の富は独占できる新しい価値からしか生まれない、という主張です。"
   }
 ];
 
